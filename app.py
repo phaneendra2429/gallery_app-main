@@ -165,7 +165,7 @@ def get_image_info(file_name):
         blob = source_bucket.blob(user + '/' + file_name)        
         url = blob.generate_signed_url(datetime.timedelta(minutes=15))
         
-         exif_dict = {}
+        exif_dict = {}
 
         if exifdata:
             for tag_id in exifdata:
