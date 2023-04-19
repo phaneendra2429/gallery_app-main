@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Gallery App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script>
+		function validateForm() {
+        var fileInput = document.getElementsByName('image')[0];
+        if (fileInput.files.length == 0) {
+          alert('No image Selected');
+          return false;
+        }
+        return true;
+      }
+	</script>
+	<style>
+		body {
+			background-color: #f5f5f5;
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+		header {
+			background-color: #333;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 1rem;
+		}
+		h1 {
+			margin: 1rem 0;
+			text-align: center;
+		}
+		form {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 1rem 0;
+		}
+		input[type="file"] {
+			margin-right: 1rem;
+		}
+		.gallery {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			margin: 1rem;
+		}
+		.gallery img {
+			margin: 0.5rem;
+			width: 300px;
+			height: 300px;
+			object-fit: cover;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+		}
+		table {
+			border-collapse: collapse;
+			margin: 1rem auto;
+		}
+		td, th {
+			padding: 0.5rem;
+			border: 1px solid #ddd;
+		}
+		th {
+			background-color: #f5f5f5;
+			font-weight: bold;
+			text-align: left;
+		}
+		a {
+			color: #333;
+			text-decoration: none;
+		}
+		button {
+			background-color: #333;
+			color: #fff;
+			padding: 0.5rem 1rem;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			margin: 1rem;
+		}
+        .dwn {
+			color: rgba(0, 0, 0, 0.934);
+            background-color: rgba(51, 51, 51, 0);
+            border: 1px solid black;
+		}
+        input[type="file"] {
+        border: 2px solid #ccc;
+        color:#333;
+        padding: 10px;
+        border-radius: 5px;
+        background-color: #f5f5f5;
+        font-size: 16px;
+        font-weight: bold;
+        }
+
+        input[type="submit"] {
+        background-color: #008CBA;
+        color: rgb(255, 255, 255);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+        background-color: #006F8B;
+        }
+
+        
+	</style>
+</head>
+<body>
+	<header>
+		<h1>My Gallery App</h1>
+		<form  method="POST" enctype="multipart/form-data" onsubmit="return validateForm();" >
+			<input  type="file" name="image">            
+			<input  type="submit" value="Upload" name="submit_button">
+		</form>
+	</header>
+	{% if image_urls %}
+		<div class="gallery">
+			{% for image_url, name in image_urls %}
+				<div><a href="{{ url_for('get_image_info', file_name=name) }}">
+					<img src="{{ image_url }}" alt="image">
+				</a>
+                {%set name = name.split("/")[1]%}
+                <br>
+                <center><a href="{{ image_url }}" download>
+                <button class='dwn'>Download</button>
+                <a class="btn btn-danger" onclick="return confirm('Do you want to proceed?');" href="{{ url_for('delete', file_name=name) }}">Delete</a>
+                </a></center></div>
+                
+			{% endfor %}
+		</div>
+	{% endif %}
+	<center>
+		<button onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+	</center>
+</body>
+</html>
