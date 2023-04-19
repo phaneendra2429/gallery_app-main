@@ -165,6 +165,50 @@ def get_image_info(file_name):
         blob = source_bucket.blob(user + '/' + file_name)        
         url = blob.generate_signed_url(datetime.timedelta(minutes=15))
         
+         exif_dict = {}
+
+        if exifdata:
+            for tag_id in exifdata:
+                tag = TAGS.get(tag_id, tag_id)
+                value = exifdata.get(tag_id)
+                if isinstance(value, bytes):
+                    try:
+                        value = value.decode()
+                    except UnicodeDecodeError:
+                        pass
+                exif_dict[tag] = value
+
+        print('This is a EXIF dictionary',exif_dict)
+        
+        # exif_dict = json.loads(exif_dict)
+
+        # exif_dict = ndb.model.Expando(**exif_dict).to_dict()
+                
+        datastore_client = datastore.Client()
+        key = datastore_client.key('data', file_name)
+        task = datastore.Entity(key)
+        task.update({
+            'User' : user,
+            'Name': file_name,
+            'URL' : url,
+            'Exif': exif_dict
+        })
+        # task.update(exif_dict)
+        print('This is the task Dictionary',task)
+        type(task)
+        try: 
+            datastore_client.put(task)    
+        except:
+            exif_dict = str(exif_dict)
+            task.update({
+            'User' : user,
+            'Name': file_name,
+            'URL' : url,
+            'Exif': exif_dict
+            })
+            datastore_client.put(task) 
+
+        
         # Download the image from the blob as a byte stream
         image_bytes = BytesIO()
         blob.download_to_file(image_bytes)
